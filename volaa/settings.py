@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'users',
     'orders',
     'shops',
+    'rest_framework.authtoken'
 ]
 
 MIDDLEWARE = [
@@ -76,6 +77,16 @@ WSGI_APPLICATION = 'volaa.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
+
+# setting the authentication and permission classes globaly
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': (
+#         'rest_framework.authentication.TokenAuthentication'
+#     ),
+#     'DEFAULT_PERMISSION_CLASSES': (
+#         'rest_framework.permissions.IsAuthenticated'
+#     )
+# }
 
 DATABASES = {
     # 'default': {
@@ -136,3 +147,6 @@ MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 # Activate Django-Heroku
 django_heroku.settings(locals())
+
+# using core API to generate API services
+REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'}
