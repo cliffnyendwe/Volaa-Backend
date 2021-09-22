@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'orders',
     'shops',
     'rest_framework.authtoken',
+    'drf_yasg',
 ]
 
 MIDDLEWARE = [
@@ -78,19 +79,22 @@ WSGI_APPLICATION = 'volaa.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
-# setting the authentication and permission classes globaly
+# setting the authentication and permission classes globally
 # REST_FRAMEWORK = {
-#
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.TokenAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#     ],
-#     'DEFAULT_PERMISSION_CLASSES': [
-#         'rest_framework.permissions.IsAuthenticated',
-#     ],
+#     'DEFAULT_PERMISSION_CLASSES':
+#         ('rest_framework.permissions.IsAuthenticatedOrReadOnly',),
 #
 # }
-
+# SWAGGER_SETTINGS = {
+#     'SECURITY_DEFINITIONS': {
+#         'basic': {
+#             'type': 'basic'
+#         }
+#     },
+# }
+SWAGGER_SETTINGS = {
+    'VALIDATOR_URL': 'http://localhost:8189',
+}
 DATABASES = {
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql',

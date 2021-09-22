@@ -43,22 +43,24 @@ class ShopProfileView(viewsets.ViewSet):
 
     def list(self, request):
         try:
-            user_longitude = float(request.GET.get('longitude'))
-            user_latitude = float(request.GET.get('latitude'))
+            # user_longitude = float(request.GET.get('longitude'))
+            # user_latitude = float(request.GET.get('latitude'))
             shop_type = request.GET.get('type')
             search = request.GET.get('search')
         except Exception:
             return Response("invalid coordinates", status=status.HTTP_400_BAD_REQUEST)
 
-        queryset = ShopProfileModel.objects.annotate(distance=
-                                                     haversine(user_latitude, user_longitude,
-                                                               F('address__location_latitude'),
-                                                               F('address__location_longitude'))
-                                                     ).filter(distance__lte=2.5,
-                                                              is_open=True,
-                                                              is_active=True, opens_at__lte=timezone.now(),
-                                                              closes_at__gt=timezone.now()
-                                                              ).order_by('distance')
+
+        queryset = ShopProfileModel.objects.all()
+        # queryset = ShopProfileModel.objects.annotate(distance=
+        #                                              haversine(user_latitude, user_longitude,
+        #                                                        F('address__location_latitude'),
+        #                                                        F('address__location_longitude'))
+        #                                              ).filter(distance__lte=2.5,
+        #                                                       is_open=True,
+        #                                                       is_active=True, opens_at__lte=timezone.now(),
+        #                                                       closes_at__gt=timezone.now()
+        #                                                       ).order_by('distance')
         if shop_type:
             queryset = queryset.filter(shop_type__iexact=shop_type)
         if search:
