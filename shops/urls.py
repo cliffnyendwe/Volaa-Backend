@@ -22,6 +22,7 @@ option_router.register('', OptionView, 'options')
 addon_router = DefaultRouter()
 addon_router.register('', AddOnView, 'add-ons')
 
+##
 
 app_name = 'shops'
 

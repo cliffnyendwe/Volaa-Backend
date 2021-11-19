@@ -31,26 +31,26 @@ class ShopProfileModel(models.Model):
     ]
 
     account = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shop_profile")
-    profile_photo = models.ImageField(upload_to=shop_photo_upload)
-    cover_photo = models.ImageField(upload_to=shop_photo_upload)
-    phone_number = models.BigIntegerField()
-    description = models.TextField()
-    shop_type = models.CharField(max_length=1, choices=shop_type_choices)
-    name = models.CharField(max_length=255)
+    profile_photo = models.ImageField(upload_to=shop_photo_upload, null=True)
+    cover_photo = models.ImageField(upload_to=shop_photo_upload, null=True)
+    phone_number = models.BigIntegerField(null=True)
+    description = models.TextField(null=True)
+    shop_type = models.CharField(max_length=1, choices=shop_type_choices, null=True)
+    name = models.CharField(max_length=255, null=True)
     slug = models.SlugField(max_length=255, unique=True)
     rating = models.DecimalField(default=0, decimal_places=1, max_digits=2)
     is_active = models.BooleanField(default=False)
     is_open = models.BooleanField(default=True)
-    currency = models.CharField(max_length=3, choices=currencies)
+    currency = models.CharField(max_length=3, choices=currencies, null=True)
     minimum_charge = models.FloatField(default=0)
-    delivery_fee = models.FloatField()
+    delivery_fee = models.FloatField(null=True)
     vat = models.FloatField(default=0, max_length=2, validators=[
         MaxValueValidator(100),
         MinValueValidator(0)
     ])
-    opens_at = models.TimeField()
-    closes_at = models.TimeField()
-    time_to_prepare = models.IntegerField()
+    opens_at = models.TimeField(null=True)
+    closes_at = models.TimeField(null=True)
+    time_to_prepare = models.IntegerField(null=True)
 
     def __str__(self):
         return self.name
@@ -83,13 +83,13 @@ class ShopProfileModel(models.Model):
 
 
 class ShopTagsModel(models.Model):
-    shop = models.ForeignKey(ShopProfileModel, on_delete=models.CASCADE, related_name='tags')
-    tag = models.CharField(max_length=10)
+    shop = models.ForeignKey(ShopProfileModel, on_delete=models.CASCADE, related_name='tags', null=True)
+    tag = models.CharField(max_length=10, null=True)
 
 
 class ProductGroupModel(models.Model):
-    shop = models.ForeignKey(to=ShopProfileModel, related_name="product_groups", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    shop = models.ForeignKey(to=ShopProfileModel, related_name="product_groups", on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=255, null=True)
     sort = models.PositiveIntegerField(null=True)
 
     class Meta:
@@ -108,14 +108,14 @@ class ProductGroupModel(models.Model):
 
 
 class ProductModel(models.Model):
-    shop = models.ForeignKey(to=ShopProfileModel, related_name="products", on_delete=models.CASCADE)
+    shop = models.ForeignKey(to=ShopProfileModel, related_name="products", on_delete=models.CASCADE, null=True)
     product_group = models.ForeignKey(to=ProductGroupModel, related_name="products",
                                       on_delete=models.CASCADE, null=True)
-    photo = models.ImageField(upload_to=product_photo_upload)
-    title = models.CharField(max_length=255)
-    slug = models.SlugField(max_length=255)
-    description = models.TextField()
-    price = models.FloatField()
+    photo = models.ImageField(upload_to=product_photo_upload, null=True)
+    title = models.CharField(max_length=255, null=True)
+    slug = models.SlugField(max_length=255, null=True)
+    description = models.TextField(null=True)
+    price = models.FloatField(null=True)
     rating = models.DecimalField(default=0, decimal_places=1, max_digits=2)
     is_available = models.BooleanField(default=True)
     is_offer = models.BooleanField(default=False)
@@ -152,8 +152,8 @@ class ProductModel(models.Model):
 
 
 class OptionGroupModel(models.Model):
-    product = models.ForeignKey(to=ProductModel, related_name="option_groups", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
+    product = models.ForeignKey(to=ProductModel, related_name="option_groups", on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=255, null=True)
     sort = models.PositiveIntegerField(null=True)
     changes_price = models.BooleanField(default=False)
 
@@ -179,8 +179,8 @@ class OptionGroupModel(models.Model):
 
 
 class OptionModel(models.Model):
-    option_group = models.ForeignKey(to=OptionGroupModel, on_delete=models.CASCADE, related_name="options")
-    title = models.CharField(max_length=255)
+    option_group = models.ForeignKey(to=OptionGroupModel, on_delete=models.CASCADE, related_name="options", null=True)
+    title = models.CharField(max_length=255, null=True)
     sort = models.PositiveIntegerField(null=True)
     price = models.FloatField(null=True)
 
@@ -200,9 +200,9 @@ class OptionModel(models.Model):
 
 
 class AddOnModel(models.Model):
-    product = models.ForeignKey(to=ProductModel, related_name="add_ons", on_delete=models.CASCADE)
-    title = models.CharField(max_length=255)
-    added_price = models.FloatField()
+    product = models.ForeignKey(to=ProductModel, related_name="add_ons", on_delete=models.CASCADE, null=True)
+    title = models.CharField(max_length=255, null=True)
+    added_price = models.FloatField(null=True)
     sort = models.PositiveIntegerField(null=True)
 
     class Meta:
@@ -221,18 +221,18 @@ class AddOnModel(models.Model):
 
 
 class RelyOn(models.Model):
-    option_group = models.OneToOneField(to=OptionGroupModel, on_delete=models.CASCADE, related_name='rely_on')
-    choosed_option_group = models.ForeignKey(to=OptionGroupModel, on_delete=models.CASCADE)
-    option = models.ForeignKey(to=OptionModel, on_delete=models.CASCADE)
+    option_group = models.OneToOneField(to=OptionGroupModel, on_delete=models.CASCADE, related_name='rely_on', null=True)
+    choosed_option_group = models.ForeignKey(to=OptionGroupModel, on_delete=models.CASCADE, null=True)
+    option = models.ForeignKey(to=OptionModel, on_delete=models.CASCADE, null=True)
 
 
 class ShopAddressModel(models.Model):
-    shop = models.OneToOneField(to=ShopProfileModel, related_name="address", on_delete=models.CASCADE)
+    shop = models.OneToOneField(to=ShopProfileModel, related_name="address", on_delete=models.CASCADE, null=True)
     country = models.CharField(max_length=255, blank=True)  # add signals for it
     city = models.CharField(max_length=255, blank=True)
-    area = models.CharField(max_length=255)
-    street = models.CharField(max_length=255)
-    building = models.CharField(max_length=255)
+    area = models.CharField(max_length=255, null=True)
+    street = models.CharField(max_length=255, null=True)
+    building = models.CharField(max_length=255, null=True)
     special_notes = models.TextField(blank=True)
     location_longitude = models.FloatField(default=0, validators=[
         MaxValueValidator(180),
@@ -255,8 +255,8 @@ class ShopAddressModel(models.Model):
 
 class ShopReviewModel(models.Model):
     user = models.ForeignKey(to='users.UserProfileModel', on_delete=models.SET_NULL, null=True)
-    shop = models.ForeignKey(to=ShopProfileModel, on_delete=models.CASCADE, related_name='reviews')
-    sort = models.PositiveIntegerField()
+    shop = models.ForeignKey(to=ShopProfileModel, on_delete=models.CASCADE, related_name='reviews', null=True)
+    sort = models.PositiveIntegerField(null=True)
     stars = models.FloatField(validators=[
         MaxValueValidator(5),
         MinValueValidator(0.5)
@@ -281,13 +281,13 @@ class ShopReviewModel(models.Model):
 
 class ProductReviewModel(models.Model):
     user = models.ForeignKey(to='users.UserProfileModel', on_delete=models.SET_NULL, null=True)
-    sort = models.PositiveIntegerField()
-    product = models.ForeignKey(to=ProductModel, on_delete=models.CASCADE, related_name='reviews')
+    sort = models.PositiveIntegerField(null=True)
+    product = models.ForeignKey(to=ProductModel, on_delete=models.CASCADE, related_name='reviews', null=True)
     stars = models.FloatField(validators=[
         MaxValueValidator(5),
         MinValueValidator(0.5)
     ])
-    text = models.TextField()
+    text = models.TextField(null=True)
     time_stamp = models.DateTimeField(auto_now_add=True)
 
     class Meta:
