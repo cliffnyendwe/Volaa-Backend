@@ -1,10 +1,10 @@
 
-from django.contrib.auth.models import User
+# from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from drivers.models import DriverProfileModel, DriverReviewModel
 from users.serializers import UserProfileSerializer, UserSerializer
-
+from users.models import UserProfileModel, UserAddressModel,customUser
 
 class DriverProfileSerializer(serializers.ModelSerializer):
     """The serializer for the driver profile model"""
@@ -26,7 +26,7 @@ class DriverProfileSerializer(serializers.ModelSerializer):
         """Creates a new user profile from the request's data"""
 
         account_data = validated_data.pop('account')
-        account = User(**account_data)
+        account = customUser(**account_data)
         account.set_password(account.password)
         account.save()
 
