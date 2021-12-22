@@ -2,6 +2,7 @@ import os
 import uuid
 
 from django.contrib.auth.models import User
+from users.models import customUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import F, Avg
@@ -30,7 +31,7 @@ class ShopProfileModel(models.Model):
         ('egp', 'Egyptian Pound')
     ]
 
-    account = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shop_profile")
+    account = models.OneToOneField(customUser, on_delete=models.CASCADE, related_name="shop_profile")
     profile_photo = models.ImageField(upload_to=shop_photo_upload)
     cover_photo = models.ImageField(upload_to=shop_photo_upload)
     phone_number = models.BigIntegerField()

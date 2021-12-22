@@ -1,6 +1,6 @@
 from rest_framework import permissions
 
-from users.models import UserProfileModel
+from users.models import UserProfileModel,customUser
 
 
 class UserProfilePermissions(permissions.BasePermission):

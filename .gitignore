@@ -2,3 +2,13 @@
 /media/drivers
 /media/shops
 /media/users
+db.sqlite3
+migrations
+__pychache__
+
+*py[cod]
+*$py.class
+
+#vscode#
+.vscode/*
+.history
