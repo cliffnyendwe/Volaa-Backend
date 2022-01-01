@@ -6,7 +6,7 @@ from django.db.models.signals import post_save
 from django.contrib.auth.models import User,AbstractBaseUser,BaseUserManager, PermissionsMixin
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
+# from rest_framework.authtoken.models import Token
 from django.db import models
 
 
@@ -97,10 +97,10 @@ class customUser(AbstractBaseUser, PermissionsMixin):
     def has_module_perms(self,app_label):
         return True
 
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)
 
 class UserProfileModel(models.Model):
 
