@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
+from users.models import customUser
+
 
 from volaa import haversine
 from shops.models import ShopProfileModel, ShopReviewModel, ProductGroupModel, ProductModel, ProductReviewModel, \

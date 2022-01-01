@@ -5,6 +5,7 @@ from rest_framework import serializers
 from shops.models import (ShopProfileModel, ProductGroupModel, ProductModel,
                           OptionGroupModel, OptionModel, AddOnModel, RelyOn,
                           ShopAddressModel, ShopReviewModel, ProductReviewModel, ShopTagsModel)
+from users.models import customUser
 from users.serializers import UserProfileSerializer, UserSerializer
 
 
@@ -514,8 +515,9 @@ class ShopProfileDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ShopProfileModel
+
         fields = ('slug', 'account', 'profile_photo', 'phone_number', 'cover_photo',
-                  'description', 'shop_type', 'name', 'tags', 'shop_tags', 'rating',
+                  'description','shop_tags','shop_type', 'name', 'tags', 'rating',
                   'reviews_count', 'is_open', 'opens_at', 'closes_at', 'currency',
                   'minimum_charge', 'delivery_fee', 'time_to_prepare', 'address')
         extra_kwargs = {
@@ -541,7 +543,7 @@ class ShopProfileDetailSerializer(serializers.ModelSerializer):
         shop_tags = validated_data.pop('shop_tags')
 
         account_data = validated_data.pop('account')
-        account = User(**account_data)
+        account = customUser(**account_data)
         account.set_password(account.password)
         account.save()
 

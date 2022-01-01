@@ -244,6 +244,9 @@ class ShopAddressModel(models.Model):
         MinValueValidator(-90)
     ])
 
+    def __str__(self):
+        return self.shop.name
+
     def update_attrs(self, **kwargs):
         for key, value in kwargs.items():
             if hasattr(self, key):
