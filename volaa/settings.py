@@ -164,3 +164,5 @@ django_heroku.settings(locals())
 
 # using core API to generate API services
 REST_FRAMEWORK = {'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'}
+
+DEFAULT_AUTO_FIELD  = 'django.db.models.BigAutoField'
