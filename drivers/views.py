@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from drivers.models import DriverProfileModel, DriverReviewModel
 from drivers.permissions import DriverProfilePermissions, DriverReviewPermissions
 from drivers.serializers import DriverProfileSerializer, DriverReviewSerializer
+from users.models import customUser
 from volaa import haversine
 
 
@@ -23,8 +24,8 @@ def driver_login(request):
 
     username = request.data['username']
     password = request.data['password']
-
-    user = authenticate(username=username, password=password)
+    
+    user = get_object_or_404(customUser, username=username,password = password)
 
     if user and hasattr(user, 'driver_profile'):
         login(request, user)
@@ -38,7 +39,7 @@ class DriverProfileView(viewsets.ViewSet):
 
     Lists, Retrieves, Updates and Deletes a driver Profile.
     """
-    # permission_classes = (DriverProfilePermissions,)
+    permission_classes = (DriverProfilePermissions,)
     serializer_class = DriverProfileSerializer
 
     def list(self, request):
@@ -117,14 +118,14 @@ class DriverProfileView(viewsets.ViewSet):
             HTTP 201 Response with the JSON data of the created profile.
         """
 
-        # if not request.user.is_authenticated:
-        serializer = DriverProfileSerializer(data=request.data)
-        if serializer.is_valid():
-            driver_profile = serializer.save()
-            login(request, driver_profile.account)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        # return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if not request.user.is_authenticated:
+            serializer = DriverProfileSerializer(data=request.data)
+            if serializer.is_valid():
+                driver_profile = serializer.save()
+                login(request, driver_profile.account)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     def update(self, request, username=None):
         """Completely Updates the driver profile.

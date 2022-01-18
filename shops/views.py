@@ -45,8 +45,8 @@ class ShopProfileView(viewsets.ViewSet):
 
     def list(self, request):
         try:
-            # user_longitude = float(request.GET.get('longitude'))
-            # user_latitude = float(request.GET.get('latitude'))
+            user_longitude = float(request.GET.get('longitude'))
+            user_latitude = float(request.GET.get('latitude'))
             shop_type = request.GET.get('type')
             search = request.GET.get('search')
         except Exception:
@@ -54,15 +54,15 @@ class ShopProfileView(viewsets.ViewSet):
 
 
         queryset = ShopProfileModel.objects.all()
-        # queryset = ShopProfileModel.objects.annotate(distance=
-        #                                              haversine(user_latitude, user_longitude,
-        #                                                        F('address__location_latitude'),
-        #                                                        F('address__location_longitude'))
-        #                                              ).filter(distance__lte=2.5,
-        #                                                       is_open=True,
-        #                                                       is_active=True, opens_at__lte=timezone.now(),
-        #                                                       closes_at__gt=timezone.now()
-        #                                                       ).order_by('distance')
+        queryset = ShopProfileModel.objects.annotate(distance=
+                                                     haversine(user_latitude, user_longitude,
+                                                               F('address__location_latitude'),
+                                                               F('address__location_longitude'))
+                                                     ).filter(distance__lte=2.5,
+                                                              is_open=True,
+                                                              is_active=True, opens_at__lte=timezone.now(),
+                                                              closes_at__gt=timezone.now()
+                                                              ).order_by('distance')
         if shop_type:
             queryset = queryset.filter(shop_type__iexact=shop_type)
         if search:
@@ -190,6 +190,7 @@ class ProductGroupView(viewsets.ViewSet):
         shop = get_object_or_404(ShopProfileModel, slug=shop_slug)
         self.check_object_permissions(request, shop)
         serializer = ProductGroupSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save(shop=shop)
             return Response(serializer.data, status=status.HTTP_201_CREATED)

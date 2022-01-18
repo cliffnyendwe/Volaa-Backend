@@ -76,14 +76,14 @@ class UserProfileView(viewsets.ViewSet):
              HTTP 201 Response with the JSON data of the created profile.
         """
 
-        #if not request.user.is_authenticated:
-        serializer = UserProfileSerializer(data=request.data)
-        if serializer.is_valid():
-            user_profile = serializer.save()
-            login(request, user_profile.account)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        #return Response(status=status.HTTP_401_UNAUTHORIZED)
+        if not request.user.is_authenticated:
+            serializer = UserProfileSerializer(data=request.data)
+            if serializer.is_valid():
+                user_profile = serializer.save()
+                login(request, user_profile.account)
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     def update(self, request, username=None):
         """Completely Updates the user profile.
