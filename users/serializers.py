@@ -43,6 +43,8 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('account', 'profile_photo', 'phone_number')
         extra_kwargs = {
             'profile_photo': {'required': False},
+            'email': {'required': False},
+
         }
 
     def create(self, validated_data):

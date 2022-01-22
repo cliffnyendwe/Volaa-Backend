@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'users',
     'orders',
     'shops',
-    'rest_framework.authtoken',
     'drf_yasg',
 ]
 
