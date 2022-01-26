@@ -36,17 +36,30 @@ urlpatterns = [
                                                        'delete': 'destroy'})),
 
     path('<slug:shop_slug>/reviews/', include(shop_reviews_router.urls)),
+    
     path('<slug:shop_slug>/product-groups/', include(product_group_router.urls)),
 
     path('<slug:shop_slug>/products/', ProductView.as_view({'get': 'list', 'post': 'create'})),
+
     path('<slug:shop_slug>/products/<slug:product_slug>/', ProductView.as_view({'get': 'retrieve',
                                                                                 'put': 'update',
                                                                                 'patch': 'partial_update',
                                                                                 'delete': 'destroy'})),
 
     path('<slug:shop_slug>/products/<slug:product_slug>/reviews/', include(product_reviews_router.urls)),
-    path('<slug:shop_slug>/products/<slug:product_slug>/option-groups/', include(option_group_router.urls)),
+
+    path('<slug:shop_slug>/products/<slug:product_slug>/option-groups/', OptionGroupView.as_view({'post': 'create'})),
+
+    path('<slug:shop_slug>/products/<slug:product_slug>/option-groups/<int:pk>/', OptionGroupView.as_view({'put': 'update',
+                                                            'patch': 'partial_update',
+                                                            'delete': 'destroy'})),
+
     path('<slug:shop_slug>/products/<slug:product_slug>/option-groups/<int:group_id>/options/',
-         include(option_router.urls)),
+                                                            OptionView.as_view({'post': 'create'})),
+    path('<slug:shop_slug>/products/<slug:product_slug>/option-groups/<int:group_id>/options/<int:pk>/',
+                                                            OptionView.as_view({'put': 'update',
+                                                            'patch': 'partial_update',
+                                                            'delete': 'destroy'})),
+
     path('<slug:shop_slug>/products/<slug:product_slug>/addons/', include(addon_router.urls))
 ]

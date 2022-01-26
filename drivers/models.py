@@ -34,7 +34,7 @@ class DriverProfileModel(models.Model):
     ]
 
     account = models.OneToOneField(customUser, on_delete=models.CASCADE, related_name="driver_profile")
-    profile_photo = models.ImageField(upload_to=photo_upload)
+    profile_photo = models.ImageField(upload_to=photo_upload,null=True)
     phone_number = models.BigIntegerField()
     is_active = models.BooleanField(default=False)  # is evaluated and confirmed in person from the company (not fake)
     is_available = models.BooleanField(default=False)  # is opening the app and connected to the internet

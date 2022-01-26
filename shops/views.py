@@ -194,7 +194,7 @@ class ProductGroupView(viewsets.ViewSet):
         if serializer.is_valid():
             serializer.save(shop=shop)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, shop_slug=None, pk=None):
         product_group = get_object_or_404(ProductGroupModel, shop__slug=shop_slug, sort=pk)
@@ -400,7 +400,7 @@ class OptionView(viewsets.ViewSet):
     permission_classes = (OptionPermissions,)
     serializer_class = OptionSerializer
 
-    def create(self, request, shop_slug=None, product_slug=None, group_id=None):
+    def create(self, request, shop_slug=None, product_slug=None, group_id=None,pk=None):
         option_group = get_object_or_404(OptionGroupModel, product__shop__slug=shop_slug,
                                          product__slug=product_slug, sort=group_id)
         self.check_object_permissions(request, option_group)

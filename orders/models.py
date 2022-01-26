@@ -28,6 +28,9 @@ class OrderModel(models.Model):
     delivery_fee = models.FloatField()
     vat = models.FloatField()
 
+    def __str__(self):
+        return self.shipping_address.area
+
 
 class OrderItemsGroupModel(models.Model):
     """The Model of the Order's items' groups."""
