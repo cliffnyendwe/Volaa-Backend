@@ -3,8 +3,20 @@ from django.contrib import admin
 from django.contrib.auth.models import Group
 
 from . import models
+import users
 
 admin.site.site_header = 'volaa Admin Dashboard'  # header for the admin site
+
+
+class userAdmin(admin.ModelAdmin):
+    list_display = ('username','email','is_staff')
+    search_fields = ('username','email')
+    readonly_fields = ('date_joined','last_login')
+
+    filter_horizontal =  ()
+    list_filter= ()
+    fieldsets = ()
+
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -38,6 +50,7 @@ class UserAddressAdmin(admin.ModelAdmin):
         return obj.user.phone_number
 
 
+admin.site.register(models.customUser,userAdmin)
 admin.site.register(models.UserProfileModel, UserProfileAdmin)
 admin.site.register(models.UserAddressModel, UserAddressAdmin)
 admin.site.unregister(Group)  # unregister default django model group

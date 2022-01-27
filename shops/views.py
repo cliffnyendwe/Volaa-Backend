@@ -9,6 +9,8 @@ from rest_framework.decorators import api_view
 from rest_framework.generics import get_object_or_404
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.response import Response
+from users.models import customUser
+
 
 from volaa import haversine
 from shops.models import ShopProfileModel, ShopReviewModel, ProductGroupModel, ProductModel, ProductReviewModel, \
@@ -43,8 +45,8 @@ class ShopProfileView(viewsets.ViewSet):
 
     def list(self, request):
         try:
-            # user_longitude = float(request.GET.get('longitude'))
-            # user_latitude = float(request.GET.get('latitude'))
+            user_longitude = float(request.GET.get('longitude'))
+            user_latitude = float(request.GET.get('latitude'))
             shop_type = request.GET.get('type')
             search = request.GET.get('search')
         except Exception:
@@ -52,15 +54,15 @@ class ShopProfileView(viewsets.ViewSet):
 
 
         queryset = ShopProfileModel.objects.all()
-        # queryset = ShopProfileModel.objects.annotate(distance=
-        #                                              haversine(user_latitude, user_longitude,
-        #                                                        F('address__location_latitude'),
-        #                                                        F('address__location_longitude'))
-        #                                              ).filter(distance__lte=2.5,
-        #                                                       is_open=True,
-        #                                                       is_active=True, opens_at__lte=timezone.now(),
-        #                                                       closes_at__gt=timezone.now()
-        #                                                       ).order_by('distance')
+        queryset = ShopProfileModel.objects.annotate(distance=
+                                                     haversine(user_latitude, user_longitude,
+                                                               F('address__location_latitude'),
+                                                               F('address__location_longitude'))
+                                                     ).filter(distance__lte=2.5,
+                                                              is_open=True,
+                                                              is_active=True, opens_at__lte=timezone.now(),
+                                                              closes_at__gt=timezone.now()
+                                                              ).order_by('distance')
         if shop_type:
             queryset = queryset.filter(shop_type__iexact=shop_type)
         if search:
@@ -188,10 +190,11 @@ class ProductGroupView(viewsets.ViewSet):
         shop = get_object_or_404(ShopProfileModel, slug=shop_slug)
         self.check_object_permissions(request, shop)
         serializer = ProductGroupSerializer(data=request.data)
+        
         if serializer.is_valid():
             serializer.save(shop=shop)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors,status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, shop_slug=None, pk=None):
         product_group = get_object_or_404(ProductGroupModel, shop__slug=shop_slug, sort=pk)
@@ -397,7 +400,7 @@ class OptionView(viewsets.ViewSet):
     permission_classes = (OptionPermissions,)
     serializer_class = OptionSerializer
 
-    def create(self, request, shop_slug=None, product_slug=None, group_id=None):
+    def create(self, request, shop_slug=None, product_slug=None, group_id=None,pk=None):
         option_group = get_object_or_404(OptionGroupModel, product__shop__slug=shop_slug,
                                          product__slug=product_slug, sort=group_id)
         self.check_object_permissions(request, option_group)

@@ -7,7 +7,7 @@ from rest_framework.response import Response
 
 from users.models import UserAddressModel, UserProfileModel
 from users.permissions import UserProfilePermissions, UserAddressPermissions
-from users.serializers import UserProfileSerializer, UserAddressSerializer
+from users.serializers import UserProfileSerializer, UserAddressSerializer, UserSerializer
 
 
 @api_view(['POST'])
@@ -77,7 +77,7 @@ class UserProfileView(viewsets.ViewSet):
         """
 
         if not request.user.is_authenticated:
-            serializer = self.serializer_class(data=request.data)
+            serializer = UserProfileSerializer(data=request.data)
             if serializer.is_valid():
                 user_profile = serializer.save()
                 login(request, user_profile.account)

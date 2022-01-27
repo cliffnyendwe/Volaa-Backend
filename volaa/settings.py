@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'users',
     'orders',
     'shops',
-    'rest_framework.authtoken',
     'drf_yasg',
 ]
 
@@ -56,8 +55,15 @@ MIDDLEWARE = [
 
 ]
 
-ROOT_URLCONF = 'volaa.urls'
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
+}
 
+ROOT_URLCONF = 'volaa.urls'
+AUTH_USER_MODEL = 'users.customUser'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',

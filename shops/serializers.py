@@ -1,6 +1,6 @@
-
 from django.contrib.auth.models import User
 from rest_framework import serializers
+from users.models import customUser
 
 from shops.models import (ShopProfileModel, ProductGroupModel, ProductModel,
                           OptionGroupModel, OptionModel, AddOnModel, RelyOn,
@@ -509,19 +509,22 @@ class ShopProfileDetailSerializer(serializers.ModelSerializer):
     account = UserSerializer()
     address = ShopAddressSerializer()
     reviews_count = serializers.SerializerMethodField(read_only=True, source='get_reviews_count')
-    #shop_tags = serializers.ListField(child=serializers.CharField(max_length=10, min_length=1),
-    #                                  write_only=True, max_length=3)
+    shop_tags = serializers.ListField(child=serializers.CharField(max_length=10, min_length=1),
+                                      write_only=True, max_length=3)
+    # commented out tags for HTML API test, turn on tag supported fronted and add to  Meta fiels
 
     class Meta:
         model = ShopProfileModel
         fields = ('slug', 'account', 'profile_photo', 'phone_number', 'cover_photo',
-                  'description', 'shop_type', 'name', 'rating',
+                  'description','shop_type','shop_tags', 'name', 'rating',
                   'reviews_count', 'is_open', 'opens_at', 'closes_at', 'currency',
                   'minimum_charge', 'delivery_fee', 'time_to_prepare', 'address')
         extra_kwargs = {
             'slug': {'read_only': True},
-            #'tags': {'read_only': True},
+            'tags': {'read_only': True},
             'rating': {'read_only': True},
+            'email':{'required': False},
+            'username':{'required': False},
         }
 
     def __init__(self, *args, **kwargs):
@@ -531,43 +534,43 @@ class ShopProfileDetailSerializer(serializers.ModelSerializer):
 
         super(ShopProfileDetailSerializer, self).__init__(*args, **kwargs)
 
-    #def to_representation(self, instance):
-    #    rep = super().to_representation(instance)
-    #    rep['tags'] = [x.tag for x in instance.tags.all()]
-    #    return rep
+    def to_representation(self, instance):
+       rep = super().to_representation(instance)
+       rep['tags'] = [x.tag for x in instance.tags.all()]
+       return rep
 
     def create(self, validated_data):
         address_data = validated_data.pop('address')
-        #shop_tags = validated_data.pop('shop_tags')
+        shop_tags = validated_data.pop('shop_tags')
 
         account_data = validated_data.pop('account')
-        account = User(**account_data)
+        account = customUser(**account_data)
         account.set_password(account.password)
         account.save()
 
         shop_profile = ShopProfileModel.objects.create(account=account, **validated_data)
 
-        #for tag in shop_tags:
-        #    ShopTagsModel.objects.create(tag=tag, shop=shop_profile)
+        for tag in shop_tags:
+            ShopTagsModel.objects.create(tag=tag, shop=shop_profile)
 
         ShopAddressModel.objects.create(shop=shop_profile, **address_data)
 
         return shop_profile
 
     def update(self, instance, validated_data):
-        #shop_tags = validated_data.pop('shop_tags', {})
+        shop_tags = validated_data.pop('shop_tags', {})
 
         address_data = validated_data.pop('address', {})
         address = instance.address
         address.update_attrs(**address_data)
 
- #       if shop_tags:
+        if shop_tags:
             # deletes all tags and replaces them with new ones
-  #          for tag in instance.tags.all():
-  #              tag.delete()
-#
-   #         for tag in shop_tags:
-  #              ShopTagsModel.objects.create(tag=tag, shop=instance)
+            for tag in instance.tags.all():
+                tag.delete()
+
+            for tag in shop_tags:
+                ShopTagsModel.objects.create(tag=tag, shop=instance)
 
         account_data = validated_data.pop('account', {})
         account = instance.account
@@ -607,10 +610,10 @@ class ShopProfileSerializer(serializers.ModelSerializer):
                 if field not in keep_only_fields:
                     self.fields.pop(field)
 
-   # def to_representation(self, instance):
-   #     rep = super().to_representation(instance)
-   #     rep['tags'] = [x.tag for x in instance.tags.all()]
-   #     return rep
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+        rep['tags'] = [x.tag for x in instance.tags.all()]
+        return rep
 
     def get_reviews_count(self, obj):
         return obj.reviews.count()

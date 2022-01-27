@@ -1,17 +1,16 @@
 import django.contrib.auth.password_validation as validators
-from django.contrib.auth.models import User
 from django.core import exceptions
 from rest_framework import serializers
 
-from users.models import UserProfileModel, UserAddressModel
+from users.models import UserProfileModel, UserAddressModel,customUser
 
 
 class UserSerializer(serializers.ModelSerializer):
     """The serializer for the django auth user model"""
 
     class Meta:
-        model = User
-        fields = ('first_name', 'last_name', 'username', 'password')
+        model = customUser
+        fields = ['first_name','last_name','email', 'username','password']
         extra_kwargs = {
             'password': {'write_only': True},
         }
@@ -21,7 +20,7 @@ class UserSerializer(serializers.ModelSerializer):
 
         password = data.get('password', '')
         if password:
-            user = User(**data)
+            user = customUser(**data)
             errors = dict()
             try:
                 validators.validate_password(password=password, user=user)
@@ -44,13 +43,15 @@ class UserProfileSerializer(serializers.ModelSerializer):
         fields = ('account', 'profile_photo', 'phone_number')
         extra_kwargs = {
             'profile_photo': {'required': False},
+            'email': {'required': False},
+
         }
 
     def create(self, validated_data):
         """Creates a new user profile from the request's data"""
 
         account_data = validated_data.pop('account')
-        account = User(**account_data)
+        account = customUser(**account_data)
         account.set_password(account.password)
         account.save()
 

@@ -3,6 +3,7 @@ import os
 import uuid
 
 from django.contrib.auth.models import User
+from users.models import customUser
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
 from django.db.models import Avg
@@ -32,8 +33,8 @@ class DriverProfileModel(models.Model):
         ('B', 'Bike')
     ]
 
-    account = models.OneToOneField(User, on_delete=models.CASCADE, related_name="driver_profile")
-    profile_photo = models.ImageField(upload_to=photo_upload)
+    account = models.OneToOneField(customUser, on_delete=models.CASCADE, related_name="driver_profile")
+    profile_photo = models.ImageField(upload_to=photo_upload,null=True)
     phone_number = models.BigIntegerField()
     is_active = models.BooleanField(default=False)  # is evaluated and confirmed in person from the company (not fake)
     is_available = models.BooleanField(default=False)  # is opening the app and connected to the internet

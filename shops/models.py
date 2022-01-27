@@ -1,5 +1,6 @@
 import os
 import uuid
+from users.models import customUser
 
 from django.contrib.auth.models import User
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -30,7 +31,7 @@ class ShopProfileModel(models.Model):
         ('egp', 'Egyptian Pound')
     ]
 
-    account = models.OneToOneField(User, on_delete=models.CASCADE, related_name="shop_profile")
+    account = models.OneToOneField(customUser, on_delete=models.CASCADE, related_name="shop_profile")
     profile_photo = models.ImageField(upload_to=shop_photo_upload, null=True)
     cover_photo = models.ImageField(upload_to=shop_photo_upload, null=True)
     phone_number = models.BigIntegerField(null=True)
@@ -107,7 +108,7 @@ class ProductGroupModel(models.Model):
         super(ProductGroupModel, self).save(*args, **kwargs)
 
 
-class ProductModel(models.Model):
+class ProductModel(models.Model):   
     shop = models.ForeignKey(to=ShopProfileModel, related_name="products", on_delete=models.CASCADE, null=True)
     product_group = models.ForeignKey(to=ProductGroupModel, related_name="products",
                                       on_delete=models.CASCADE, null=True)
@@ -242,6 +243,9 @@ class ShopAddressModel(models.Model):
         MaxValueValidator(90),
         MinValueValidator(-90)
     ])
+
+    def __str__(self):
+        return self.shop.name
 
     def update_attrs(self, **kwargs):
         for key, value in kwargs.items():

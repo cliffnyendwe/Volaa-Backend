@@ -11,6 +11,7 @@ from rest_framework.response import Response
 from drivers.models import DriverProfileModel, DriverReviewModel
 from drivers.permissions import DriverProfilePermissions, DriverReviewPermissions
 from drivers.serializers import DriverProfileSerializer, DriverReviewSerializer
+from users.models import customUser
 from volaa import haversine
 
 
@@ -23,8 +24,8 @@ def driver_login(request):
 
     username = request.data['username']
     password = request.data['password']
-
-    user = authenticate(username=username, password=password)
+    
+    user = get_object_or_404(customUser, username=username,password = password)
 
     if user and hasattr(user, 'driver_profile'):
         login(request, user)
